@@ -64,7 +64,7 @@ class Trackables:
     tracker_details: dict
     hw_info: dict
     pos_report: dict
-    health_overview: dict | None
+    health_overview: dict
 
 
 @dataclass(slots=True)
@@ -152,8 +152,8 @@ async def _generate_trackables(
     tracker = client.tracker(trackable["device_id"])
     trackable_obj = client.trackable_object(trackable["_id"])
 
-    tracker_details, hw_info, pos_report = await asyncio.gather(
-        tracker.details(), tracker.hw_info(), tracker.pos_report()
+    tracker_details, hw_info, pos_report, health_overview = await asyncio.gather(
+        tracker.details(), tracker.hw_info(), tracker.pos_report(), trackable_obj.health_overview()
     )
 
     if not tracker_details.get("_id"):
@@ -161,15 +161,6 @@ async def _generate_trackables(
             f"Tractive API returns incomplete data for tracker {trackable['device_id']}",
         )
 
-    # Fetch health overview data (replaces deprecated wellness_overview)
-    health_overview = None
-    try:
-        health_overview = await trackable_obj.health_overview()
-    except aiotractive.exceptions.TractiveError:
-        _LOGGER.debug(
-            "Could not fetch health overview for pet %s, continuing without it",
-            trackable["_id"],
-        )
 
     return Trackables(
         tracker, trackable, tracker_details, hw_info, pos_report, health_overview
@@ -251,10 +242,6 @@ class TractiveClient:
                     if server_was_unavailable:
                         _LOGGER.debug("Tractive is back online")
                         server_was_unavailable = False
-                    # Support both deprecated wellness_overview and new health_overview
-                    if event["message"] == "wellness_overview":
-                        self._send_wellness_update(event)
-                        continue
                     if event["message"] == "health_overview":
                         self.send_health_overview_update(event)
                         continue
