@@ -195,7 +195,6 @@ SENSOR_TYPES: tuple[TractiveSensorEntityDescription, ...] = (
             "high",
             "low",
         ],
-        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     TractiveSensorEntityDescription(
         key=ATTR_RESTING_RESPIRATORY_RATE,
@@ -209,14 +208,12 @@ SENSOR_TYPES: tuple[TractiveSensorEntityDescription, ...] = (
             "high",
             "low",
         ],
-        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     TractiveSensorEntityDescription(
         key=ATTR_HEALTH_ALERTS,
         translation_key="health_alerts",
         signal_prefix=TRACKER_WELLNESS_STATUS_UPDATED,
         state_class=SensorStateClass.MEASUREMENT,
-        entity_category=EntityCategory.DIAGNOSTIC,
     ),
 )
 
