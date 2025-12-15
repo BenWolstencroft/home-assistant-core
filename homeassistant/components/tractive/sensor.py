@@ -28,10 +28,13 @@ from .const import (
     ATTR_ACTIVITY_LABEL,
     ATTR_CALORIES,
     ATTR_DAILY_GOAL,
+    ATTR_HEALTH_ALERTS,
     ATTR_MINUTES_ACTIVE,
     ATTR_MINUTES_DAY_SLEEP,
     ATTR_MINUTES_NIGHT_SLEEP,
     ATTR_MINUTES_REST,
+    ATTR_RESTING_HEART_RATE,
+    ATTR_RESTING_RESPIRATORY_RATE,
     ATTR_SLEEP_LABEL,
     ATTR_TRACKER_STATE,
     TRACKER_HARDWARE_STATUS_UPDATED,
@@ -124,6 +127,7 @@ SENSOR_TYPES: tuple[TractiveSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTime.MINUTES,
         signal_prefix=TRACKER_WELLNESS_STATUS_UPDATED,
         state_class=SensorStateClass.TOTAL,
+        # Note: In health_overview API, this maps to sleep.minutesCalm (calm minutes)
     ),
     TractiveSensorEntityDescription(
         key=ATTR_CALORIES,
@@ -131,6 +135,7 @@ SENSOR_TYPES: tuple[TractiveSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfEnergy.KILO_CALORIE,
         signal_prefix=TRACKER_WELLNESS_STATUS_UPDATED,
         state_class=SensorStateClass.TOTAL,
+        entity_registry_enabled_default=False,  # Deprecated: No longer provided by Tractive API
     ),
     TractiveSensorEntityDescription(
         key=ATTR_DAILY_GOAL,
@@ -163,6 +168,7 @@ SENSOR_TYPES: tuple[TractiveSensorEntityDescription, ...] = (
             "low",
             "ok",
         ],
+        entity_registry_enabled_default=False,  # Deprecated: No longer provided by Tractive API
     ),
     TractiveSensorEntityDescription(
         key=ATTR_ACTIVITY_LABEL,
@@ -175,6 +181,42 @@ SENSOR_TYPES: tuple[TractiveSensorEntityDescription, ...] = (
             "low",
             "ok",
         ],
+        entity_registry_enabled_default=False,  # Deprecated: No longer provided by Tractive API
+    ),
+    TractiveSensorEntityDescription(
+        key=ATTR_RESTING_HEART_RATE,
+        translation_key="resting_heart_rate",
+        signal_prefix=TRACKER_WELLNESS_STATUS_UPDATED,
+        value_fn=lambda state: state.lower() if isinstance(state, str) else state,
+        device_class=SensorDeviceClass.ENUM,
+        options=[
+            "calculating_baseline",
+            "normal",
+            "high",
+            "low",
+        ],
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    TractiveSensorEntityDescription(
+        key=ATTR_RESTING_RESPIRATORY_RATE,
+        translation_key="resting_respiratory_rate",
+        signal_prefix=TRACKER_WELLNESS_STATUS_UPDATED,
+        value_fn=lambda state: state.lower() if isinstance(state, str) else state,
+        device_class=SensorDeviceClass.ENUM,
+        options=[
+            "calculating_baseline",
+            "normal",
+            "high",
+            "low",
+        ],
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    TractiveSensorEntityDescription(
+        key=ATTR_HEALTH_ALERTS,
+        translation_key="health_alerts",
+        signal_prefix=TRACKER_WELLNESS_STATUS_UPDATED,
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
 )
 

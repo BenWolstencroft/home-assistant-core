@@ -79,6 +79,27 @@
           "system_shutdown_user": "System shutdown user",
           "system_startup": "System startup"
         }
+      },
+      "resting_heart_rate": {
+        "name": "Resting heart rate",
+        "state": {
+          "calculating_baseline": "Calculating baseline",
+          "normal": "Normal",
+          "high": "High",
+          "low": "Low"
+        }
+      },
+      "resting_respiratory_rate": {
+        "name": "Resting respiratory rate",
+        "state": {
+          "calculating_baseline": "Calculating baseline",
+          "normal": "Normal",
+          "high": "High",
+          "low": "Low"
+        }
+      },
+      "health_alerts": {
+        "name": "Health alerts"
       }
     },
     "switch": {

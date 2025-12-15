@@ -27,11 +27,14 @@ from .const import (
     ATTR_ACTIVITY_LABEL,
     ATTR_CALORIES,
     ATTR_DAILY_GOAL,
+    ATTR_HEALTH_ALERTS,
     ATTR_MINUTES_ACTIVE,
     ATTR_MINUTES_DAY_SLEEP,
     ATTR_MINUTES_NIGHT_SLEEP,
     ATTR_MINUTES_REST,
     ATTR_POWER_SAVING,
+    ATTR_RESTING_HEART_RATE,
+    ATTR_RESTING_RESPIRATORY_RATE,
     ATTR_SLEEP_LABEL,
     ATTR_TRACKER_STATE,
     CLIENT_ID,
@@ -327,7 +330,7 @@ class TractiveClient:
             ATTR_MINUTES_DAY_SLEEP: sleep_day,
             ATTR_MINUTES_NIGHT_SLEEP: sleep_night,
             ATTR_MINUTES_REST: event["activity"]["minutes_rest"],
-            ATTR_SLEEP_LABEL: event["wellness"].get("sleep_label"),
+            : event["wellness"].get("sleep_label"),
         }
         self._dispatch_tracker_event(
             TRACKER_WELLNESS_STATUS_UPDATED, event["pet_id"], payload
@@ -341,6 +344,9 @@ class TractiveClient:
 
         activity = data.get("activity", {})
         sleep = data.get("sleep")
+        resting_heart_rate_data = data.get("restingHeartRate")
+        resting_respiratory_rate_data = data.get("restingRespiratoryRate")
+        health_alerts_data = data.get("healthAlerts")
 
         sleep_day = None
         sleep_night = None
@@ -352,6 +358,19 @@ class TractiveClient:
             # Calm minutes can be used as rest indicator
             minutes_rest = sleep.get("minutesCalm")
 
+        # Extract health metrics
+        resting_heart_rate = None
+        if isinstance(resting_heart_rate_data, dict):
+            resting_heart_rate = resting_heart_rate_data.get("status")
+
+        resting_respiratory_rate = None
+        if isinstance(resting_respiratory_rate_data, dict):
+            resting_respiratory_rate = resting_respiratory_rate_data.get("status")
+
+        health_alerts = None
+        if isinstance(health_alerts_data, dict):
+            health_alerts = health_alerts_data.get("unseenCount")
+
         payload = {
             ATTR_ACTIVITY_LABEL: None,  # Not available in new API
             ATTR_CALORIES: None,  # Calories no longer provided
@@ -361,6 +380,9 @@ class TractiveClient:
             ATTR_MINUTES_NIGHT_SLEEP: sleep_night,
             ATTR_MINUTES_REST: minutes_rest,
             ATTR_SLEEP_LABEL: None,  # Not available in new API
+            ATTR_RESTING_HEART_RATE: resting_heart_rate,
+            ATTR_RESTING_RESPIRATORY_RATE: resting_respiratory_rate,
+            ATTR_HEALTH_ALERTS: health_alerts,
         }
         self._dispatch_tracker_event(
             TRACKER_WELLNESS_STATUS_UPDATED, data.get("petId"), payload
