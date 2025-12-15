@@ -330,7 +330,7 @@ class TractiveClient:
             ATTR_MINUTES_DAY_SLEEP: sleep_day,
             ATTR_MINUTES_NIGHT_SLEEP: sleep_night,
             ATTR_MINUTES_REST: event["activity"]["minutes_rest"],
-            : event["wellness"].get("sleep_label"),
+            ATTR_SLEEP_LABEL: event["wellness"].get("sleep_label"),
         }
         self._dispatch_tracker_event(
             TRACKER_WELLNESS_STATUS_UPDATED, event["pet_id"], payload
